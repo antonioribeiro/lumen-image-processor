@@ -20,7 +20,7 @@ class FileFinder {
 
 		if ( ! $this->filesystem->exists($dirname))
 		{
-			$this->filesystem->makeDirectory($file, 0775, true); // true = recursive
+			$this->filesystem->makeDirectory($dirname, 0775, true); // true = recursive
 
 			return false;
 		}

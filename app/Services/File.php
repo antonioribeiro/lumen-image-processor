@@ -60,11 +60,6 @@ class File {
 			$this->error = 'URL not provided.';
 		}
 
-//		if (Cache::has('what'))
-//		{
-//			dd(1);
-//		}
-
 		$this->findFile();
 
 		$this->processTransformations();
