@@ -3,10 +3,6 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use Illuminate\Cache\CacheManager;
-use Intervention\Image\Image;
-use Intervention\Image\ImageManager;
-use Symfony\Component\Finder\Finder;
 use Illuminate\Contracts\Filesystem\Factory as Filesystem;
 
 class File {
@@ -33,12 +29,7 @@ class File {
 
 	private $transformedFileName;
 
-	/**
-	 * @var CacheManager
-	 */
-	private $cache;
-
-	public function __construct($request, CacheManager $cache, FileFinder $fileFinder, Filesystem $filesystem)
+	public function __construct($request, FileFinder $fileFinder, Filesystem $filesystem, Image $image)
 	{
 		$this->request = $request;
 
@@ -46,7 +37,7 @@ class File {
 
 		$this->filesystem = $filesystem;
 
-		$this->cache = $cache;
+		$this->image = $image;
 
 		$this->parseRequest();
 	}
@@ -121,6 +112,8 @@ class File {
 		$this->fileName = $path . DIRECTORY_SEPARATOR . $this->urlHash . '.' . $extension;
 
 		$this->makeTransformedFileName($path);
+
+		$this->image->setFilename($this->getRealFilename());
 	}
 
 	private function makeDeepPath($string)
@@ -153,9 +146,7 @@ class File {
 		{
 			foreach ($this->request->except('url') as $command => $value)
 			{
-				$this->instantiateImage();
-
-				$this->image = $this->transformImage($this->image, $command, $value);
+				$this->image->transform($command, $value);
 
 				$this->transformed = true;
 			}
@@ -164,18 +155,6 @@ class File {
 			{
 				$this->image->save($this->getRealFilename($this->getTransformedFileName()));
 			}
-		}
-	}
-
-	private function instantiateImage()
-	{
-		if ( ! $this->image)
-		{
-			$manager = new ImageManager(array('driver' => 'imagick'));
-
-			$this->image = $manager->make(
-				$this->getRealFilename()
-			);
 		}
 	}
 
@@ -192,19 +171,6 @@ class File {
 	private function getFileName($fileName)
 	{
 		return pathinfo($fileName, PATHINFO_FILENAME);
-	}
-
-	private function transformImage($image, $command, $value)
-	{
-		if ($command == 'width')
-		{
-			$image->resize($value, null, function ($constraint)
-			{
-				$constraint->aspectRatio();
-			});
-		}
-
-		return $image;
 	}
 
 	private function getRealFilename($fileName = null)
