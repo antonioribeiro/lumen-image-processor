@@ -22,6 +22,8 @@ class FilesController extends Controller
 
 	public function process()
 	{
+		// return redirect()->to('http://ecx.images-amazon.com/images/I/21Ek33LuV-L.jpg');
+
 		$file = $this->processor->process($this->request);
 
 		if ( ! $file->isValid())
