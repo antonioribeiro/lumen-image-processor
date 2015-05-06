@@ -20,14 +20,18 @@ class Processor {
 
 	public function process($request)
 	{
-		if ($file = $this->getCached($request))
+		if ($image = $this->getCached($request))
 		{
-			return $file;
+			$this->file = app()->make('App\Services\File', [$request]);
+
+			$this->file->setImage($image);
+
+			return $this->file;
 		}
 
 		$this->file = $this->fileFactory->make($request);
 
-		$this->cache($request, $file);
+		$this->cache($request, $this->file->getImage());
 
 		return $this->file;
 	}

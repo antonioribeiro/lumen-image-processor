@@ -218,4 +218,14 @@ class File {
 		return $this->fileName;
 	}
 
+	public function setImage($image)
+	{
+		$this->image->setImage($image);
+	}
+
+	public function getImage()
+	{
+		$this->image->getImage();
+	}
+
 }
