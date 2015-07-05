@@ -2,9 +2,6 @@
 
 namespace App\Services;
 
-use Cache;
-use Carbon\Carbon;
-
 class Processor {
 
 	private $image;
@@ -13,14 +10,16 @@ class Processor {
 
 	private $file;
 
-	public function __construct(FileFactory $fileFactory)
+	public function __construct(FileFactory $fileFactory, Cache $cache)
 	{
 		$this->fileFactory = $fileFactory;
+
+		$this->cache = $cache;
 	}
 
 	public function process($request)
 	{
-		if ($image = $this->getCached($request))
+		if ($image = $this->cache->get($request))
 		{
 			$this->file = app()->make('App\Services\File', [$request]);
 
@@ -31,7 +30,7 @@ class Processor {
 
 		$this->file = $this->fileFactory->make($request);
 
-		$this->cache($request, $this->file->getImage());
+		$this->cache->put($request, $this->file->getImage());
 
 		return $this->file;
 	}
@@ -50,34 +49,6 @@ class Processor {
 		$this->image = call_user_func_array([$this->imageManager, $name], $arguments);
 
 		return $this;
-	}
-
-	private function getCached($request)
-	{
-		$key = $this->makeCacheKey($request->query());
-
-		return Cache::get($key);
-	}
-
-	private function makeCacheKey($query)
-	{
-		$key = '';
-
-		foreach($query as $name => $value)
-		{
-			$key .= "$name=$value&";
-		}
-
-		return $key;
-	}
-
-	private function cache($request, $file)
-	{
-		$key = $this->makeCacheKey($request->query());
-
-		$expiresAt = Carbon::now()->addMinutes(env('CACHE_EXPIRING_MINUTES'));
-
-		Cache::put($key, $file, $expiresAt);
 	}
 
 }

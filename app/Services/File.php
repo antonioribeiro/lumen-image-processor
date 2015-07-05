@@ -168,7 +168,7 @@ class File {
 		return pathinfo($fileName, PATHINFO_EXTENSION);
 	}
 
-	private function getFileName($fileName)
+	private function makeFileName($fileName)
 	{
 		return pathinfo($fileName, PATHINFO_FILENAME);
 	}
@@ -198,7 +198,7 @@ class File {
 
 		$extension = $this->getExtension($this->fileName);
 
-		$filename = $this->getFileName($this->fileName);
+		$filename = $this->makeFileName($this->fileName);
 
 		foreach ($this->request->except('url') as $key => $transformation)
 		{
@@ -225,7 +225,12 @@ class File {
 
 	public function getImage()
 	{
-		$this->image->getImage();
+		return $this->image->getImage();
+	}
+
+	public function getFileName()
+	{
+		return $this->fileName;
 	}
 
 }

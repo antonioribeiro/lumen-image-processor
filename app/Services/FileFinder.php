@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Symfony\Component\Finder\Finder;
 use Illuminate\Contracts\Filesystem\Factory as Filesystem;
 
 class FileFinder {
@@ -14,13 +13,16 @@ class FileFinder {
 		$this->filesystem = $filesystem;
 	}
 
-	public function find($file)
+	public function find($file, $recursivelyCreateDirectories = true)
 	{
 		$dirname = dirname($file);
 
 		if ( ! $this->filesystem->exists($dirname))
 		{
-			$this->filesystem->makeDirectory($dirname, 0775, true); // true = recursive
+			if ($recursivelyCreateDirectories)
+			{
+				$this->filesystem->makeDirectory($dirname, 0775, true);
+			}
 
 			return false;
 		}

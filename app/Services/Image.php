@@ -12,6 +12,8 @@ class Image {
 
 	private $values;
 
+	private $fileName;
+
 	public function __construct()
 	{
 		$this->manager = new ImageManager(['driver' => 'imagick']);
@@ -19,13 +21,17 @@ class Image {
 
 	public function setFilename($fileName)
 	{
-		$this->image = $this->manager->make($fileName);
+		$this->fileName = $fileName;
+
+		$this->makeManager();
 
 		return $this;
 	}
 
 	public function transform($command, $value = null)
 	{
+		$this->makeManager();
+
 		$this->values = explode(' ', $value);
 
 		$zero = $this->getValue(0);
@@ -33,7 +39,6 @@ class Image {
 		$two = $this->getValue(2);
 		$three = $this->getValue(3);
 		$four = $this->getValue(4);
-		$five = $this->getValue(5);
 
 		if ($command == 'width')
 		{
@@ -260,10 +265,6 @@ class Image {
 		return $default;
 	}
 
-	/**
-	 * @param $two
-	 * @return \Closure|null
-	 */
 	private function checkConstraint($zero, $one = null)
 	{
 		$constraint = function ($constraint) use ($zero, $one)
@@ -280,6 +281,14 @@ class Image {
 		};
 
 		return $constraint;
+	}
+
+	private function makeManager()
+	{
+		if (file_exists($this->fileName) && ! $this->image)
+		{
+			$this->image = $this->manager->make($this->fileName);
+		}
 	}
 
 }
