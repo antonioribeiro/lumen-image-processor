@@ -31,7 +31,7 @@ class Processor {
 			return $this->makeResponseForInvalidFile();
 		}
 
-		$image = $this->file->download($this->response);
+		$image = $this->file->download();
 
 		$this->cache->put($request, $image);
 
@@ -58,6 +58,10 @@ class Processor {
 	public function setResponse($response)
 	{
 		$this->response = $response;
+
+		$this->file->setResponse($response);
+
+		return $this;
 	}
 
 }

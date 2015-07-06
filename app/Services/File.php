@@ -29,6 +29,8 @@ class File {
 
 	private $transformedFileName;
 
+	private $response;
+
 	public function __construct(FileFinder $fileFinder, Filesystem $filesystem, Image $image)
 	{
 		$this->fileFinder = $fileFinder;
@@ -69,13 +71,11 @@ class File {
 		return $this->error;
 	}
 
-	public function download($response = null)
+	public function download()
 	{
-		$response = $response ?: response();
-
 		$filetype = $this->filesystem->mimeType($this->getFinalFileName());
 
-		$response = $response->make(file_get_contents($this->getRealFilename($this->getFinalFileName())), 200);
+		$response = $this->response->make(file_get_contents($this->getRealFilename($this->getFinalFileName())), 200);
 
 		$response->header('Content-Type', $filetype);
 
@@ -153,10 +153,10 @@ class File {
 			{
 				$this->image->transform($command, $value);
 
-				$this->transformed = true;
+				$this->wasTransformed = true;
 			}
 
-			if ($this->transformed)
+			if ($this->wasTransformed)
 			{
 				$this->image->save($this->getRealFilename($this->getTransformedFileName()));
 			}
@@ -236,6 +236,11 @@ class File {
 	public function getFileName()
 	{
 		return $this->fileName;
+	}
+
+	public function setResponse($response)
+	{
+		$this->response = $response;
 	}
 
 }
