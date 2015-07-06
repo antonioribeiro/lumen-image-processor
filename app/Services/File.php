@@ -31,6 +31,22 @@ class File
 
 	private $response;
 
+	const URL_PARAMETER = 'url';
+
+	const FILES_FOLDER = 'files';
+
+	const TRANSFORMATION_SEPARATOR = '_';
+
+	const SLUG_SEPARATOR = '.';
+
+	const ERROR_SLUG_NOT_PROVIDED = 'URL not provided.';
+
+	const REQUEST_TTL = 600;
+
+	const REQUEST_EXPIRING_DAYS = 30;
+
+	const PATH_DEPTH = 8;
+
 	public function __construct(FileFinder $fileFinder, Filesystem $filesystem, Image $image)
 	{
 		$this->fileFinder = $fileFinder;
@@ -49,11 +65,11 @@ class File
 
 	private function parseRequest()
 	{
-		if ( ! $this->url = $this->request->query->get('url'))
+		if ( ! $this->url = $this->request->query->get(self::URL_PARAMETER))
 		{
 			$this->valid = false;
 
-			$this->error = 'URL not provided.';
+			$this->error = self::ERROR_SLUG_NOT_PROVIDED;
 		}
 
 		$this->findFile();
@@ -81,13 +97,13 @@ class File
 
 		$response->header("Content-Disposition", "filename=" . $this->getOriginalFileName());
 
-		$response->setTtl(600);
+		$response->setTtl(self::REQUEST_TTL);
 
-		$response->expire(600);
+		$response->expire(self::REQUEST_TTL);
 
-		$response->setExpires(Carbon::now()->addDay(30));
+		$response->setExpires(Carbon::now()->addDay(self::REQUEST_EXPIRING_DAYS));
 
-		$response->setSharedMaxAge(600);
+		$response->setSharedMaxAge(self::REQUEST_TTL);
 
 		return $response;
 	}
@@ -114,7 +130,7 @@ class File
 
 		$path = $this->getBaseDir() . DIRECTORY_SEPARATOR . $this->makeDeepPath($this->urlHash);
 
-		$this->fileName = $path . DIRECTORY_SEPARATOR . $this->urlHash . '.' . $extension;
+		$this->fileName = $path . DIRECTORY_SEPARATOR . $this->urlHash . self::SLUG_SEPARATOR . $extension;
 
 		$this->makeTransformedFileName($path);
 
@@ -125,7 +141,7 @@ class File
 	{
 		$path = '';
 
-		for ($x = 0; $x <= min(8, strlen($string)); $x++)
+		for ($x = 0; $x <= min(self::PATH_DEPTH, strlen($string)); $x++)
 		{
 			$path .= ($path ? DIRECTORY_SEPARATOR : '') . $string[$x];
 		}
@@ -135,7 +151,7 @@ class File
 
 	private function getBaseDir()
 	{
-		return 'files';
+		return env('STORAGE_FILES_DIR', self::FILES_FOLDER);
 	}
 
 	private function fetchOriginal()
@@ -149,7 +165,7 @@ class File
 	{
 		if  ( ! $this->wasTransformed)
 		{
-			foreach ($this->request->except('url') as $command => $value)
+			foreach ($this->request->except(self::URL_PARAMETER) as $command => $value)
 			{
 				$this->image->transform($command, $value);
 
@@ -205,12 +221,12 @@ class File
 
 		$filename = $this->makeFileName($this->fileName);
 
-		foreach ($this->request->except('url') as $key => $transformation)
+		foreach ($this->request->except(self::URL_PARAMETER) as $key => $transformation)
 		{
-			$filename .= '_' . $key . '_' . $transformation;
+			$filename .= self::TRANSFORMATION_SEPARATOR . $key . self::TRANSFORMATION_SEPARATOR . $transformation;
 		}
 
-		return $this->transformedFileName = $path . str_slug($filename) . '.' . $extension;
+		return $this->transformedFileName = $path . str_slug($filename) . self::SLUG_SEPARATOR . $extension;
 	}
 
 	private function getFinalFileName()

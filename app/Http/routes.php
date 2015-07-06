@@ -21,7 +21,7 @@ $app->group(['namespace' => 'App\Http\Controllers'], function($app)
 	$app->get('api/v1/image',
 	[
 		'as' => 'process',
-		'uses' => 'FilesController@process'
+		'uses' => 'ImagesController@process'
 	]);
 });
 

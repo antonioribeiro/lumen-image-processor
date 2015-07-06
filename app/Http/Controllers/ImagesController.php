@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\Processor;
 use Illuminate\Http\Request;
 
-class FilesController extends Controller
+class ImagesController extends Controller
 {
 
 	private $request;
