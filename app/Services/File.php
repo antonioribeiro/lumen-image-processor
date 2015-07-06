@@ -29,15 +29,18 @@ class File {
 
 	private $transformedFileName;
 
-	public function __construct($request, FileFinder $fileFinder, Filesystem $filesystem, Image $image)
+	public function __construct(FileFinder $fileFinder, Filesystem $filesystem, Image $image)
 	{
-		$this->request = $request;
-
 		$this->fileFinder = $fileFinder;
 
 		$this->filesystem = $filesystem;
 
 		$this->image = $image;
+	}
+
+	public function processRequest($request)
+	{
+		$this->request = $request;
 
 		$this->parseRequest();
 	}

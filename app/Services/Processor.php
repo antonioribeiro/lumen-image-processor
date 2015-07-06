@@ -6,13 +6,11 @@ class Processor {
 
 	private $image;
 
-	private $fileFactory;
-
 	private $file;
 
-	public function __construct(FileFactory $fileFactory, Cache $cache)
+	public function __construct(File $file, Cache $cache)
 	{
-		$this->fileFactory = $fileFactory;
+		$this->file = $file;
 
 		$this->cache = $cache;
 	}
@@ -24,7 +22,7 @@ class Processor {
 			return $image;
 		}
 
-		$this->file = $this->fileFactory->make($request);
+		$this->file->processRequest($request);
 
 		if ( ! $this->file->isValid())
 		{
