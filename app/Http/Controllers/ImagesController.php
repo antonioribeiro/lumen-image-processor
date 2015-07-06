@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class ImagesController extends Controller
 {
-
 	private $request;
 
 	private $processor;
@@ -25,5 +24,4 @@ class ImagesController extends Controller
 	{
 		return $this->processor->process($this->request);
     }
-
 }

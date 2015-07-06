@@ -3,20 +3,29 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use Cache as LaravelCache;
 
 class Cache
 {
+	/**
+	 * @var \Illuminate\Cache\CacheManager
+	 */
+	private $cache;
+
+	public function __construct()
+	{
+		$this->cache = app('cache');
+	}
+
 	public function get($request)
 	{
-		return LaravelCache::get($this->makeCacheKey($request));
+		return $this->cache->get($this->makeCacheKey($request));
 	}
 
 	public function put($request, $file)
 	{
 		if ($file)
 		{
-			LaravelCache::put(
+			$this->cache->put(
 				$this->makeCacheKey($request),
 				$file,
 				Carbon::now()->addMinutes(env('CACHE_EXPIRE_MINUTES'))

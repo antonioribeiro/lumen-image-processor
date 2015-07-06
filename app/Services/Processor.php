@@ -4,11 +4,11 @@ namespace App\Services;
 
 class Processor
 {
-	private $image;
-
 	private $file;
 
 	private $response;
+
+	private $cache;
 
 	public function __construct(File $file, Cache $cache)
 	{
@@ -31,18 +31,11 @@ class Processor
 			return $this->makeResponseForInvalidFile();
 		}
 
-		$image = $this->file->download();
+		$response = $this->file->getResponse();
 
-		$this->cache->put($request, $image);
+		$this->cache->put($request, $response);
 
-		return $image;
-	}
-
-	function __call($name, $arguments)
-	{
-		$this->image = call_user_func_array([$this->imageManager, $name], $arguments);
-
-		return $this;
+		return $response;
 	}
 
 	private function makeResponseForInvalidFile()

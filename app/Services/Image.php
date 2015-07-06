@@ -52,10 +52,6 @@ class Image
 		{
 			$this->image->brightness($this->getValue(0, 25));
 		}
-		elseif ($command == 'brightness')
-		{
-			$this->image->brightness($this->getValue(0, 25));
-		}
 		elseif ($command == 'canvas')
 		{
 

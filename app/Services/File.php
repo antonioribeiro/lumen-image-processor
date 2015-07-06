@@ -87,7 +87,7 @@ class File
 		return $this->error;
 	}
 
-	public function download()
+	public function getResponse()
 	{
 		$filetype = $this->filesystem->mimeType($this->getFinalFileName());
 
