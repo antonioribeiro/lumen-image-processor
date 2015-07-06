@@ -8,6 +8,8 @@ class Processor {
 
 	private $file;
 
+	private $response;
+
 	public function __construct(File $file, Cache $cache)
 	{
 		$this->file = $file;
@@ -29,7 +31,7 @@ class Processor {
 			return $this->makeResponseForInvalidFile();
 		}
 
-		$image = $this->file->download();
+		$image = $this->file->download($this->response);
 
 		$this->cache->put($request, $image);
 
@@ -45,12 +47,17 @@ class Processor {
 
 	private function makeResponseForInvalidFile()
 	{
-		return response(
+		return $this->response->make(
 			[
 				'success' => false,
 				'error' => $this->file->getError(),
 			]
 		);
+	}
+
+	public function setResponse($response)
+	{
+		$this->response = $response;
 	}
 
 }

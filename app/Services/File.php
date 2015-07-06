@@ -69,11 +69,13 @@ class File {
 		return $this->error;
 	}
 
-	public function download()
+	public function download($response = null)
 	{
+		$response = $response ?: response();
+
 		$filetype = $this->filesystem->mimeType($this->getFinalFileName());
 
-		$response = response()->make(file_get_contents($this->getRealFilename($this->getFinalFileName())), 200);
+		$response = $response->make(file_get_contents($this->getRealFilename($this->getFinalFileName())), 200);
 
 		$response->header('Content-Type', $filetype);
 

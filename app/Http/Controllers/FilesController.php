@@ -17,6 +17,8 @@ class FilesController extends Controller
 		$this->request = $request;
 
 		$this->processor = $processor;
+
+		$this->processor->setResponse(response());
 	}
 
 	public function process()
