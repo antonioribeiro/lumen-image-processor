@@ -21,27 +21,21 @@ class Processor {
 	{
 		if ($image = $this->cache->get($request))
 		{
-			$this->file = app()->make('App\Services\File', [$request]);
-
-			$this->file->setImage($image);
-
-			return $this->file;
+			return $image;
 		}
 
 		$this->file = $this->fileFactory->make($request);
 
-		$this->cache->put($request, $this->file->getImage());
+		if ( ! $this->file->isValid())
+		{
+			return $this->makeResponseForInvalidFile();
+		}
 
-		return $this->file;
-	}
+		$image = $this->file->download();
 
-	public function make($file)
-	{
-		$file = $this->finder->find($file);
+		$this->cache->put($request, $image);
 
-		$this->image = $this->imageManager->make($file);
-
-		return $this;
+		return $image;
 	}
 
 	function __call($name, $arguments)
@@ -49,6 +43,16 @@ class Processor {
 		$this->image = call_user_func_array([$this->imageManager, $name], $arguments);
 
 		return $this;
+	}
+
+	private function makeResponseForInvalidFile()
+	{
+		return response(
+			[
+				'success' => false,
+				'error' => $this->file->getError(),
+			]
+		);
 	}
 
 }
