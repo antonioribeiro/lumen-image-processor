@@ -4,8 +4,8 @@ namespace App\Services;
 
 use Illuminate\Contracts\Filesystem\Factory as Filesystem;
 
-class FileFinder {
-
+class FileFinder
+{
 	private $filesystem;
 
 	public function __construct(Filesystem $filesystem)
@@ -34,5 +34,4 @@ class FileFinder {
 
 		return true;
 	}
-
 }

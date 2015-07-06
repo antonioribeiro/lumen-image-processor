@@ -4,8 +4,8 @@ namespace App\Services;
 
 use Intervention\Image\ImageManager;
 
-class Image {
-
+class Image
+{
 	private $manager;
 
 	private $image;
@@ -14,9 +14,9 @@ class Image {
 
 	private $fileName;
 
-	public function __construct()
+	public function __construct(ImageManager $imageManager = null)
 	{
-		$this->manager = new ImageManager(['driver' => 'imagick']);
+		$this->manager = $imageManager ?: new ImageManager(['driver' => 'imagick']);
 	}
 
 	public function setFilename($fileName)
@@ -290,5 +290,4 @@ class Image {
 			$this->image = $this->manager->make($this->fileName);
 		}
 	}
-
 }

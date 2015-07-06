@@ -5,8 +5,8 @@ namespace App\Services;
 use Carbon\Carbon;
 use Illuminate\Contracts\Filesystem\Factory as Filesystem;
 
-class File {
-
+class File
+{
 	private $request;
 
 	private $valid = true;
@@ -25,7 +25,7 @@ class File {
 
 	private $urlHash;
 
-	private $transformed = false;
+	private $wasTransformed = false;
 
 	private $transformedFileName;
 
@@ -98,7 +98,7 @@ class File {
 
 		if ($this->fileFinder->find($this->transformedFileName = $this->getTransformedFileName()))
 		{
-			$this->transformed = true;
+			$this->wasTransformed = true;
 		}
 		elseif ( ! $this->fileFinder->find($this->fileName))
 		{
@@ -147,7 +147,7 @@ class File {
 
 	private function processTransformations()
 	{
-		if  ( ! $this->transformed)
+		if  ( ! $this->wasTransformed)
 		{
 			foreach ($this->request->except('url') as $command => $value)
 			{
@@ -215,7 +215,7 @@ class File {
 
 	private function getFinalFileName()
 	{
-		if ($this->transformed)
+		if ($this->wasTransformed)
 		{
 			return $this->transformedFileName;
 		}
@@ -242,5 +242,4 @@ class File {
 	{
 		$this->response = $response;
 	}
-
 }

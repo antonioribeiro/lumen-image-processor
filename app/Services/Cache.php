@@ -5,8 +5,8 @@ namespace App\Services;
 use Carbon\Carbon;
 use Cache as LaravelCache;
 
-class Cache {
-
+class Cache
+{
 	public function get($request)
 	{
 		return LaravelCache::get($this->makeCacheKey($request));
@@ -37,5 +37,4 @@ class Cache {
 
 		return $key;
 	}
-
 }

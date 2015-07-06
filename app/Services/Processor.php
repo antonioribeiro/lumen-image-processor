@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-class Processor {
-
+class Processor
+{
 	private $image;
 
 	private $file;
@@ -63,5 +63,4 @@ class Processor {
 
 		return $this;
 	}
-
 }
